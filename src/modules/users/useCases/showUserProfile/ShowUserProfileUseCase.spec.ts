@@ -3,6 +3,8 @@ import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUs
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { ShowUserProfileUseCase } from "./ShowUserProfileUseCase";
 
+import { ShowUserProfileError } from "./ShowUserProfileError";
+
 let inMemoryUsersRepository: InMemoryUsersRepository;
 let createUserUseCase: CreateUserUseCase;
 let showUserProfileUseCase: ShowUserProfileUseCase;
@@ -16,7 +18,7 @@ describe("Show User Profile Use Case", () => {
     );
   });
 
-  it("should be able to return user profile", async () => {
+  it("should be able to list user profile", async () => {
     const user = {
       name: "User Name",
       email: "useremail@test.com",
@@ -29,9 +31,13 @@ describe("Show User Profile Use Case", () => {
       String(userCreated.id)
     );
 
-    console.log(userProfile);
-
     expect(userProfile).toHaveProperty("id");
     expect(userProfile.password).not.toEqual(user.password);
+  });
+
+  it("should not be able to list user profile if not exists", () => {
+    expect(async () => {
+      await showUserProfileUseCase.execute("idnotexist");
+    }).rejects.toBeInstanceOf(ShowUserProfileError);
   });
 });
